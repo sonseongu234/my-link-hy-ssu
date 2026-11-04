@@ -55,7 +55,7 @@ export default function Home() {
 
         {/* 소개글 */}
         <p className="text-base text-slate-600 dark:text-slate-300 font-medium mb-6 leading-relaxed max-w-sm">
-          현재는 바이브 코딩을 배우는 군인입니다
+          전역을 준비하는 코딩러
         </p>
 
         {/* 태그 모음 */}

@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "손성우 프로필 | 바이브 코딩",
-  description: "현재는 바이브 코딩을 배우는 군인입니다 - 손성우의 프로필 페이지",
+  description: "전역을 준비하는 코딩러 - 손성우의 프로필 페이지",
 };
 
 export default function RootLayout({

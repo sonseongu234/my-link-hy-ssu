@@ -9,26 +9,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        neo: {
-          bg: "#FFFDF5",
-          paper: "#FAF7EE",
-          yellow: "#FFE600",
-          lime: "#A3E635",
-          pink: "#FF6EA7",
-          cyan: "#38BDF8",
-          purple: "#C084FC",
-          orange: "#FB923C",
-          red: "#F87171",
+        nike: {
+          ink: "#111111",
+          canvas: "#ffffff",
+          "soft-cloud": "#f5f5f5",
+          hairline: "#cacacb",
+          "hairline-soft": "#e5e5e5",
+          charcoal: "#39393b",
+          ash: "#4b4b4d",
+          mute: "#707072",
+          stone: "#9e9ea0",
+          sale: "#d30005",
+          "sale-deep": "#780700",
+          success: "#007d48",
+          info: "#1151ff",
         },
       },
-      boxShadow: {
-        neo: "4px 4px 0px 0px #000000",
-        "neo-sm": "2px 2px 0px 0px #000000",
-        "neo-md": "5px 5px 0px 0px #000000",
-        "neo-lg": "6px 6px 0px 0px #000000",
-        "neo-xl": "8px 8px 0px 0px #000000",
+      fontFamily: {
+        campaign: ["var(--font-bebas)", "Bebas Neue", "Impact", "sans-serif"],
+        sans: ["var(--font-inter)", "Inter", "Helvetica Now Text", "Helvetica Neue", "Arial", "sans-serif"],
+      },
+      spacing: {
+        section: "48px",
       },
     },
   },

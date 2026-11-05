@@ -2,343 +2,846 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { LinkCard } from "@/components/LinkCard";
-import { LinkItem } from "@/types/link";
+import { ProductCard, NikeCardItem } from "@/components/ProductCard";
 import {
-  Github,
+  Search,
+  Heart,
+  ShoppingBag,
+  ChevronRight,
+  ChevronDown,
+  ChevronLeft,
+  Check,
+  Copy,
+  ExternalLink,
+  Code2,
   BookOpen,
   Mail,
-  Sparkles,
-  Copy,
-  Check,
-  Heart,
-  Share2,
-  Terminal,
-  Award,
   Flame,
+  Award,
+  Terminal,
+  Shield,
+  Layers,
+  ArrowRight,
 } from "lucide-react";
 
 export default function Home() {
-  const [copied, setCopied] = useState(false);
-  const [cheerCount, setCheerCount] = useState(77);
+  const [activeFilter, setActiveFilter] = useState("all");
+  const [cheerCount, setCheerCount] = useState(128);
   const [hasCheered, setHasCheered] = useState(false);
+  const [copiedEmail, setCopiedEmail] = useState(false);
+  const [openAccordion, setOpenAccordion] = useState<string | null>("status");
 
-  const links: (LinkItem & { iconNode: React.ReactNode })[] = [
+  const filterOptions = [
+    { id: "all", label: "All Items (3)" },
+    { id: "repo", label: "Repositories" },
+    { id: "blog", label: "Dev Log" },
+    { id: "contact", label: "Contact & Collab" },
+  ];
+
+  const productItems: (NikeCardItem & { category: string })[] = [
     {
       id: "github",
-      title: "GitHub 저장소",
-      description: "배우고 만든 프로젝트 코드 모음",
-      url: "https://github.com/sonseongu234",
-      badge: "CODE REPO",
-      tag: "Open Source",
-      bgColor: "bg-[#FEF08A]", // Neo bright yellow
-      iconNode: <Github className="w-6 h-6 stroke-[2.5]" />,
+      category: "repo",
+      title: "GitHub / my-link-hy-ssu",
+      subtitle: "Men's Vibe Coding & Web Architecture",
+      url: "https://github.com/sonseongu234/my-link-hy-ssu",
+      badge: "JUST IN",
+      price: "Free Repository",
+      salePrice: "Active Daily",
+      originalPrice: "MIT License",
+      discountRate: "100%",
+      actionText: "Explore Code",
+      swatches: [
+        { name: "Nike Black", color: "#111111" },
+        { name: "TypeScript Blue", color: "#3178C6" },
+        { name: "Tailwind Cyan", color: "#38BDF8" },
+      ],
+      graphic: (
+        <div className="w-full h-full flex flex-col items-center justify-center text-center p-4">
+          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center border border-[#cacacb] mb-3 group-hover:scale-110 transition-transform">
+            <Code2 className="w-10 h-10 text-[#111111] stroke-[1.75]" />
+          </div>
+          <span className="font-campaign text-2xl tracking-tight text-[#111111] uppercase">
+            SOURCE CODE 01
+          </span>
+          <span className="text-[12px] font-medium text-[#707072] mt-1">
+            Next.js 15 · TypeScript · Tailwind
+          </span>
+        </div>
+      ),
     },
     {
       id: "blog",
-      title: "공부 기록 블로그",
-      description: "코딩 공부와 일상 기록",
+      category: "blog",
+      title: "Velog / 코딩 & 일상 기록",
+      subtitle: "Engineering Notes & Military Life",
       url: "https://velog.io",
-      badge: "DEV BLOG",
-      tag: "Writing",
-      bgColor: "bg-[#A7F3D0]", // Neo mint
-      iconNode: <BookOpen className="w-6 h-6 stroke-[2.5]" />,
+      badge: "MEMBER EXCLUSIVE",
+      price: "Public Dev Log",
+      salePrice: "Updated Weekly",
+      originalPrice: "Open Read",
+      discountRate: "Free",
+      actionText: "Read Articles",
+      swatches: [
+        { name: "Velog Green", color: "#20C997" },
+        { name: "Charcoal", color: "#39393b" },
+        { name: "Soft Cloud", color: "#ffffff" },
+      ],
+      graphic: (
+        <div className="w-full h-full flex flex-col items-center justify-center text-center p-4">
+          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center border border-[#cacacb] mb-3 group-hover:scale-110 transition-transform">
+            <BookOpen className="w-10 h-10 text-[#111111] stroke-[1.75]" />
+          </div>
+          <span className="font-campaign text-2xl tracking-tight text-[#111111] uppercase">
+            DEV ARCHIVE 02
+          </span>
+          <span className="text-[12px] font-medium text-[#707072] mt-1">
+            Learning Logs · Problem Solving
+          </span>
+        </div>
+      ),
     },
     {
       id: "email",
-      title: "이메일 보내기",
-      description: "궁금한 점이나 협업 연락은 여기로",
+      category: "contact",
+      title: "Direct Inquiries / 협업 및 채용 문의",
+      subtitle: "Collaboration & Developer Opportunities",
       url: "mailto:contact@example.com",
-      badge: "CONTACT",
-      tag: "Direct",
-      bgColor: "bg-[#FBCFE8]", // Neo pink
-      iconNode: <Mail className="w-6 h-6 stroke-[2.5]" />,
+      badge: "AVAILABLE NOW",
+      price: "24h Direct Reply",
+      salePrice: "Open to Work",
+      actionText: "Send Inquiries",
+      swatches: [
+        { name: "Nike Black", color: "#111111" },
+        { name: "Signal Red", color: "#d30005" },
+        { name: "Pure White", color: "#ffffff" },
+      ],
+      graphic: (
+        <div className="w-full h-full flex flex-col items-center justify-center text-center p-4">
+          <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center border border-[#cacacb] mb-3 group-hover:scale-110 transition-transform">
+            <Mail className="w-10 h-10 text-[#111111] stroke-[1.75]" />
+          </div>
+          <span className="font-campaign text-2xl tracking-tight text-[#111111] uppercase">
+            CONNECT 03
+          </span>
+          <span className="text-[12px] font-medium text-[#707072] mt-1">
+            contact@example.com
+          </span>
+        </div>
+      ),
     },
   ];
 
-  const handleCopyEmail = async () => {
+  const filteredProducts =
+    activeFilter === "all"
+      ? productItems
+      : productItems.filter((p) => p.category === activeFilter);
+
+  const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText("contact@example.com");
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      setCopiedEmail(true);
+      setTimeout(() => setCopiedEmail(false), 2000);
     } catch {
       // Fallback
     }
   };
 
   const handleCheer = () => {
-    setCheerCount((prev) => prev + 1);
+    setCheerCount((c) => c + 1);
     setHasCheered(true);
-    setTimeout(() => setHasCheered(false), 600);
+    setTimeout(() => setHasCheered(false), 300);
   };
 
-  const handleShare = async () => {
-    if (typeof window !== "undefined") {
-      try {
-        if (navigator.share) {
-          await navigator.share({
-            title: "손성우 프로필 | 전역을 준비하는 코딩러",
-            url: window.location.href,
-          });
-        } else {
-          await navigator.clipboard.writeText(window.location.href);
-          alert("링크가 클립보드에 복사되었습니다! 📋");
-        }
-      } catch {
-        // Ignored
-      }
-    }
+  const toggleAccordion = (id: string) => {
+    setOpenAccordion((cur) => (cur === id ? null : id));
   };
 
   return (
-    <div className="min-h-screen neo-grid-bg text-black flex flex-col justify-between selection:bg-[#FFE600] selection:text-black">
-      {/* 1. TOP RETRO TICKER MARQUEE */}
-      <div className="w-full bg-[#FFE600] border-b-[3px] border-black overflow-hidden py-2 shadow-neo-sm font-black text-xs sm:text-sm tracking-widest uppercase">
-        <div className="animate-marquee whitespace-nowrap flex gap-8 items-center">
-          <span>✦ MILITARY TO DEVELOPER PIPELINE</span>
-          <span>★ 전역을 준비하는 코딩러</span>
-          <span>✦ VIBE CODING IN PROGRESS</span>
-          <span>★ NEXT.JS 15 & TAILWIND CSS</span>
-          <span>✦ SON SEONG WOO</span>
-          <span>★ DAILY COMMIT & GROWTH</span>
-          {/* Duplicate for infinite loop */}
-          <span>✦ MILITARY TO DEVELOPER PIPELINE</span>
-          <span>★ 전역을 준비하는 코딩러</span>
-          <span>✦ VIBE CODING IN PROGRESS</span>
-          <span>★ NEXT.JS 15 & TAILWIND CSS</span>
-          <span>✦ SON SEONG WOO</span>
-          <span>★ DAILY COMMIT & GROWTH</span>
+    <div className="min-h-screen bg-white text-[#111111] flex flex-col justify-between selection:bg-[#111111] selection:text-white">
+      {/* =========================================================================
+          1. UTILITY BAR (utility-bar: #f5f5f5, 36px height, caption-sm 12px)
+      ========================================================================= */}
+      <div className="w-full bg-[#f5f5f5] h-[36px] px-6 sm:px-12 flex items-center justify-between text-[12px] font-medium text-[#111111] border-b border-[#e5e5e5]">
+        <div className="flex items-center gap-2">
+          {/* Subtle Jordan / ACG style mark */}
+          <span className="font-semibold tracking-wider text-[#39393b]">
+            ROK ARMY · DEV BATTALION
+          </span>
+        </div>
+
+        <div className="flex items-center gap-4 text-[#707072]">
+          <a
+            href="https://github.com/sonseongu234"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#111111] transition-colors"
+          >
+            GitHub
+          </a>
+          <span>·</span>
+          <a
+            href="https://velog.io"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hover:text-[#111111] transition-colors"
+          >
+            Velog
+          </a>
+          <span>·</span>
+          <button
+            onClick={handleCopy}
+            className="hover:text-[#111111] transition-colors"
+          >
+            {copiedEmail ? "Copied!" : "Contact"}
+          </button>
+          <span>·</span>
+          <span className="text-[#111111] font-semibold">2026 D-DAY</span>
         </div>
       </div>
 
-      {/* 2. MAIN CONTAINER */}
-      <main className="w-full max-w-xl mx-auto px-4 py-8 sm:py-12 flex-1 flex flex-col items-center">
-        {/* RETRO WINDOW CARD */}
-        <div className="w-full bg-white border-[3.5px] border-black rounded-2xl shadow-neo-xl overflow-hidden transition-all duration-200">
-          {/* WINDOW HEADER BAR */}
-          <div className="bg-[#FFE600] border-b-[3.5px] border-black px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-3.5 h-3.5 rounded-full bg-[#EF4444] border-2 border-black inline-block shadow-neo-sm"></span>
-              <span className="w-3.5 h-3.5 rounded-full bg-[#F59E0B] border-2 border-black inline-block shadow-neo-sm"></span>
-              <span className="w-3.5 h-3.5 rounded-full bg-[#10B981] border-2 border-black inline-block shadow-neo-sm"></span>
-              <span className="ml-2 font-black text-xs tracking-wider uppercase hidden sm:inline-block">
-                PROFILE_WINDOW_v2.0.EXE
-              </span>
-            </div>
-
-            <div className="inline-flex items-center gap-1.5 bg-black text-[#FFE600] text-[11px] font-black px-2.5 py-0.5 rounded border border-black shadow-neo-sm">
-              <span className="w-2 h-2 rounded-full bg-[#22C55E] animate-ping"></span>
-              STATUS: CODING NOW
-            </div>
+      {/* =========================================================================
+          2. PRIMARY NAVIGATION (primary-nav: #ffffff, 60px height)
+      ========================================================================= */}
+      <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#e5e5e5]">
+        <div className="max-w-[1440px] mx-auto h-[60px] px-6 sm:px-12 flex items-center justify-between">
+          {/* LEFT: NIKE SWOOSH LOGO + MONOGRAM */}
+          <div className="flex items-center gap-4">
+            <svg
+              className="w-14 h-7 text-[#111111]"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path d="M21.707 5.293c-.27-.27-.69-.33-1.02-.15L3.92 14.18c-1.57.84-2.22 2.68-1.53 4.29.61 1.43 2.05 2.29 3.59 2.29.56 0 1.13-.11 1.68-.35l14.07-6.03c.59-.25.87-.94.62-1.53s-.94-.87-1.53-.62l-14.07 6.03c-.63.27-1.37-.02-1.65-.67-.28-.66.02-1.42.66-1.76L18.47 7.02c.86-.46 1.89-.3 2.58.39.2.2.47.3.74.3.18 0 .37-.05.53-.15.48-.31.62-.95.31-1.43-.24-.37-.58-.65-.92-.84z" />
+            </svg>
+            <span className="font-campaign text-2xl tracking-tight uppercase text-[#111111] hidden sm:inline-block">
+              SON SEONG WOO
+            </span>
           </div>
 
-          {/* WINDOW BODY */}
-          <div className="p-6 sm:p-8 flex flex-col items-center">
-            {/* AVATAR SECTION */}
-            <div className="relative mb-6">
-              {/* Outer brutalist avatar box */}
-              <div className="relative w-32 h-32 sm:w-36 sm:h-36 rounded-2xl border-[3.5px] border-black shadow-neo-lg overflow-hidden bg-[#FAF7EE] rotate-[-2deg] hover:rotate-0 transition-transform duration-300">
+          {/* CENTER: NAV ITEMS (active with 2px ink underline) */}
+          <nav className="hidden md:flex items-center gap-7 text-[16px] font-medium text-[#111111]">
+            <span className="relative py-4 border-b-2 border-[#111111] cursor-pointer">
+              New & Featured
+            </span>
+            <a
+              href="#featured-projects"
+              className="py-4 hover:text-[#707072] transition-colors"
+            >
+              Projects
+            </a>
+            <a
+              href="#capabilities"
+              className="py-4 hover:text-[#707072] transition-colors"
+            >
+              Capabilities
+            </a>
+            <a
+              href="#specifications"
+              className="py-4 hover:text-[#707072] transition-colors"
+            >
+              Specifications
+            </a>
+            <a
+              href="#membership"
+              className="py-4 hover:text-[#707072] transition-colors"
+            >
+              Membership
+            </a>
+          </nav>
+
+          {/* RIGHT: SEARCH PILL & CIRCULAR CONTROLS */}
+          <div className="flex items-center gap-3">
+            {/* Search Pill */}
+            <div className="hidden sm:flex items-center gap-2 bg-[#f5f5f5] h-[40px] px-4 rounded-full text-[14px] text-[#707072] w-[180px] lg:w-[220px] focus-within:ring-2 focus-within:ring-[#111111]">
+              <Search className="w-4 h-4 text-[#111111]" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="bg-transparent border-0 outline-none w-full text-[#111111] placeholder-[#707072] text-[14px]"
+              />
+            </div>
+
+            {/* Wishlist Heart Icon (40px circle) */}
+            <button
+              onClick={handleCheer}
+              className={`w-10 h-10 rounded-full flex items-center justify-center bg-[#f5f5f5] hover:bg-[#e5e5e5] transition-all active:scale-95 ${
+                hasCheered ? "scale-90 opacity-70" : ""
+              }`}
+              title="Cheer developer"
+            >
+              <Heart
+                className={`w-4 h-4 ${
+                  hasCheered ? "fill-[#d30005] text-[#d30005]" : "text-[#111111]"
+                }`}
+              />
+            </button>
+
+            {/* Contact Bag Icon (40px circle) */}
+            <a
+              href="mailto:contact@example.com"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-[#f5f5f5] hover:bg-[#e5e5e5] transition-colors"
+              title="Direct contact"
+            >
+              <ShoppingBag className="w-4 h-4 text-[#111111]" />
+            </a>
+          </div>
+        </div>
+      </header>
+
+      {/* SUB-NAV STRIP (Breadcrumb / Status message) */}
+      <div className="w-full bg-white border-b border-[#e5e5e5] py-2.5 px-6 sm:px-12 text-center text-[13px] font-medium text-[#111111]">
+        <span>✦ 전역을 준비하는 코딩러</span>
+        <span className="mx-2 text-[#cacacb]">|</span>
+        <span className="text-[#707072]">
+          DAILY CODING PIPELINE · VIBE CODING FOR 2026 DISCHARGE
+        </span>
+      </div>
+
+      <main className="w-full max-w-[1440px] mx-auto px-6 sm:px-12 flex-1">
+        {/* =========================================================================
+            3. EDITORIAL CAMPAIGN HERO (campaign-tile: 96px display-campaign uppercase)
+        ========================================================================= */}
+        <section className="relative w-full mt-6 mb-12">
+          <div className="relative w-full min-h-[520px] md:min-h-[640px] bg-[#111111] overflow-hidden flex flex-col justify-end p-8 sm:p-14 text-white">
+            {/* BACKGROUND EDITORIAL PHOTOGRAPHY WITH ATHLETIC GRADIENT OVERLAY */}
+            <div className="absolute inset-0 z-0">
+              <div className="relative w-full h-full opacity-60">
                 <Image
                   src="/profile.jpg"
-                  alt="손성우 프로필 사진"
-                  width={144}
-                  height={144}
-                  className="w-full h-full object-cover"
+                  alt="손성우 프로필"
+                  fill
+                  className="object-cover object-center scale-105"
                   priority
                 />
               </div>
-
-              {/* Floating Neobrutalist sticker 1: 전역 대기 */}
-              <div className="absolute -top-3 -right-6 rotate-[8deg] bg-[#FFE600] border-[2.5px] border-black px-2.5 py-1 rounded-md shadow-neo-sm font-black text-xs flex items-center gap-1 hover:scale-105 transition-transform">
-                <span>🎖️</span>
-                <span>전역 대기 중</span>
-              </div>
-
-              {/* Floating Neobrutalist sticker 2: 바이브 코더 */}
-              <div className="absolute -bottom-3 -left-5 rotate-[-6deg] bg-[#A3E635] border-[2.5px] border-black px-2.5 py-1 rounded-md shadow-neo-sm font-black text-xs flex items-center gap-1 hover:scale-105 transition-transform">
-                <Sparkles className="w-3.5 h-3.5 stroke-[3]" />
-                <span>바이브 코더</span>
-              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/40 to-transparent" />
             </div>
 
-            {/* NAME & HANDLE */}
-            <div className="text-center mb-4">
-              <div className="inline-block relative">
-                <h1 className="text-3xl sm:text-4xl font-black tracking-tight text-black flex items-center justify-center gap-2">
-                  손성우
-                  <span className="text-xl sm:text-2xl text-[#FB923C] animate-bounce">
-                    ✦
-                  </span>
-                </h1>
-              </div>
-              <p className="text-xs sm:text-sm font-extrabold text-black/70 mt-1 uppercase tracking-wide">
-                대한민국 국군장병 · 성장형 주니어 개발자
-              </p>
-            </div>
-
-            {/* NEOBRUTALISM BIO BOX (핵심 소개글) */}
-            <div className="w-full bg-[#FFE600] border-[3px] border-black rounded-xl p-4 sm:p-5 shadow-neo mb-6 text-center relative overflow-hidden group">
-              <div className="absolute -right-3 -bottom-3 text-5xl opacity-10 select-none font-black">
-                DEV
-              </div>
-              <div className="text-xs font-black uppercase tracking-wider text-black/70 mb-1 flex items-center justify-center gap-1">
-                <Terminal className="w-3.5 h-3.5 stroke-[3]" />
-                BIO / INTRODUCTION
-              </div>
-              <p className="text-lg sm:text-xl font-black text-black leading-snug">
-                &ldquo;전역을 준비하는 코딩러&rdquo;
-              </p>
-              <p className="text-xs sm:text-sm font-bold text-black/80 mt-2">
-                매일 밤 전역 후 멋진 개발자로 도약하기 위해 바이브 코딩 중입니다! 💻🔥
-              </p>
-            </div>
-
-            {/* MINI STAT / INFO GRID */}
-            <div className="w-full grid grid-cols-2 gap-2.5 sm:gap-3 mb-6">
-              <div className="bg-[#FEF08A] border-2 border-black rounded-lg p-2.5 shadow-neo-sm text-left">
-                <div className="text-[10px] font-black text-black/70 uppercase flex items-center gap-1">
-                  <Award className="w-3 h-3 stroke-[3]" />
-                  현재 신분
-                </div>
-                <div className="text-xs sm:text-sm font-black text-black mt-0.5">
-                  대한민국 육군
-                </div>
-              </div>
-
-              <div className="bg-[#BBF7D0] border-2 border-black rounded-lg p-2.5 shadow-neo-sm text-left">
-                <div className="text-[10px] font-black text-black/70 uppercase flex items-center gap-1">
-                  <Flame className="w-3 h-3 stroke-[3]" />
-                  최종 목표
-                </div>
-                <div className="text-xs sm:text-sm font-black text-black mt-0.5">
-                  전역 후 개발자 취업
-                </div>
-              </div>
-
-              <div className="bg-[#BAE6FD] border-2 border-black rounded-lg p-2.5 shadow-neo-sm text-left">
-                <div className="text-[10px] font-black text-black/70 uppercase">
-                  ⚡ 주력 분야
-                </div>
-                <div className="text-xs sm:text-sm font-black text-black mt-0.5 truncate">
-                  바이브코딩 & 웹 풀스택
-                </div>
-              </div>
-
-              <div className="bg-[#FBCFE8] border-2 border-black rounded-lg p-2.5 shadow-neo-sm text-left">
-                <div className="text-[10px] font-black text-black/70 uppercase">
-                  🛠️ 테크 스택
-                </div>
-                <div className="text-xs sm:text-sm font-black text-black mt-0.5 truncate">
-                  Next.js 15 · React 19
-                </div>
-              </div>
-            </div>
-
-            {/* HASHTAG BADGES */}
-            <div className="flex flex-wrap justify-center gap-2 mb-8">
-              {[
-                "#바이브코딩",
-                "#군인개발자",
-                "#Next.js15",
-                "#전역준비",
-                "#열정코딩",
-                "#성장기록",
-              ].map((tag) => (
-                <span
-                  key={tag}
-                  className="text-xs font-black px-2.5 py-1 bg-white border-2 border-black rounded-md shadow-neo-sm hover:bg-black hover:text-[#FFE600] transition-colors cursor-default"
-                >
-                  {tag}
+            {/* BURNED-IN CAMPAIGN LOCKUP */}
+            <div className="relative z-10 max-w-4xl">
+              {/* CAMPAIGN OVERLAY BADGE */}
+              <div className="inline-flex items-center gap-2 mb-3">
+                <span className="bg-white text-[#111111] text-[12px] font-bold tracking-widest uppercase px-3 py-1 rounded-full">
+                  ROK ARMY · MILITARY DEV
                 </span>
-              ))}
-            </div>
+                <span className="text-white text-[12px] font-medium tracking-wide">
+                  D-DAY PIPELINE
+                </span>
+              </div>
 
-            {/* SECTION DIVIDER */}
-            <div className="w-full flex items-center gap-3 mb-6">
-              <div className="h-[2px] bg-black flex-1"></div>
-              <span className="font-black text-xs tracking-wider uppercase bg-black text-white px-3 py-1 border border-black shadow-neo-sm">
-                CONNECT & LINKS
+              {/* TOWERING UPPERCASE DISPLAY HEADLINE (typography.display-campaign: 96px, line-height 0.9) */}
+              <h1 className="font-campaign text-6xl sm:text-8xl md:text-9xl tracking-tight uppercase leading-[0.88] text-white">
+                PREPARING FOR
+                <br />
+                DISCHARGE.
+              </h1>
+
+              {/* EDITORIAL SUBTITLE & BIO */}
+              <div className="mt-4 mb-8 max-w-2xl">
+                <p className="text-xl sm:text-2xl font-medium text-white/95 leading-tight">
+                  &ldquo;전역을 준비하는 코딩러&rdquo;
+                </p>
+                <p className="text-sm sm:text-base font-normal text-white/75 mt-2 leading-relaxed">
+                  국방의 의무와 코딩을 병행하며 매일 한 걸음씩 완성해 나가는
+                  손성우의 바이브 코딩 & 풀스택 포트폴리오입니다.
+                </p>
+              </div>
+
+              {/* ON-IMAGE PILL CTAS */}
+              <div className="flex flex-wrap items-center gap-3">
+                {/* button-outline-on-image: White pill anchored bottom-left */}
+                <a
+                  href="#featured-projects"
+                  className="h-[48px] px-8 rounded-full bg-white text-[#111111] text-[15px] font-medium flex items-center justify-center transition-all active:scale-95 hover:bg-[#f5f5f5]"
+                >
+                  Explore Code
+                </a>
+
+                {/* button-secondary: Soft alternative */}
+                <a
+                  href="mailto:contact@example.com"
+                  className="h-[48px] px-8 rounded-full bg-[#f5f5f5]/90 backdrop-blur-sm text-[#111111] text-[15px] font-medium flex items-center justify-center transition-all active:scale-95 hover:bg-white"
+                >
+                  Contact Seongwoo
+                </a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            4. FEATURED PROJECTS SECTION (PLP Listing / Product Cards)
+        ========================================================================= */}
+        <section id="featured-projects" className="py-6 mb-12">
+          {/* SECTION HEADER & CAROUSEL CONTROLS */}
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+            <div>
+              <span className="text-[14px] font-medium text-[#707072] uppercase tracking-wider block mb-1">
+                Official Directory
               </span>
-              <div className="h-[2px] bg-black flex-1"></div>
+              <h2 className="text-[28px] sm:text-[32px] font-medium text-[#111111] leading-tight">
+                FEATURED FOOTWEAR & PROJECTS
+              </h2>
             </div>
 
-            {/* LINKS LIST */}
-            <div className="w-full space-y-3.5 mb-6">
-              {links.map((link) => (
-                <LinkCard
-                  key={link.id}
-                  link={link}
-                  iconNode={link.iconNode}
-                />
-              ))}
-            </div>
-
-            {/* INTERACTIVE ACTIONS (EMAIL COPY & CHEER BUTTON) */}
-            <div className="w-full grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              {/* Copy Email Button */}
+            {/* Circular Carousel Controls (40px circle) */}
+            <div className="flex items-center gap-2">
               <button
-                onClick={handleCopyEmail}
-                className="w-full flex items-center justify-center gap-2 p-3 bg-white border-[2.5px] border-black rounded-xl font-black text-xs sm:text-sm shadow-neo hover:shadow-neo-lg hover:-translate-y-0.5 active:translate-y-1 active:shadow-neo-sm transition-all"
+                className="w-10 h-10 rounded-full bg-[#f5f5f5] flex items-center justify-center text-[#111111] hover:bg-[#e5e5e5] transition-colors"
+                title="Previous"
               >
-                {copied ? (
-                  <>
-                    <Check className="w-4 h-4 text-[#16A34A] stroke-[3]" />
-                    <span className="text-[#16A34A]">이메일 주소 복사됨!</span>
-                  </>
+                <ChevronLeft className="w-5 h-5" />
+              </button>
+              <button
+                className="w-10 h-10 rounded-full bg-[#f5f5f5] flex items-center justify-center text-[#111111] hover:bg-[#e5e5e5] transition-colors"
+                title="Next"
+              >
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          </div>
+
+          {/* FILTER CHIPS ROW (filter-chip & filter-chip-active) */}
+          <div className="flex items-center gap-2.5 overflow-x-auto pb-4 mb-6 no-scrollbar">
+            {filterOptions.map((f) => {
+              const isActive = activeFilter === f.id;
+              return (
+                <button
+                  key={f.id}
+                  onClick={() => setActiveFilter(f.id)}
+                  className={`h-[40px] px-4 rounded-full text-[14px] font-medium transition-all whitespace-nowrap active:scale-95 ${
+                    isActive
+                      ? "bg-[#111111] text-white"
+                      : "bg-white text-[#111111] border border-[#cacacb] hover:border-[#111111]"
+                  }`}
+                >
+                  {f.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* 3-UP PRODUCT GRID (zero radius, zero shadow, sits directly on #f5f5f5 stage) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            {filteredProducts.map((item) => (
+              <ProductCard key={item.id} item={item} />
+            ))}
+          </div>
+        </section>
+
+        {/* =========================================================================
+            5. SHOP BY DISCIPLINE / SPORT-CATEGORY RAIL
+        ========================================================================= */}
+        <section id="capabilities" className="py-6 mb-12">
+          <div className="mb-6">
+            <span className="text-[14px] font-medium text-[#707072] uppercase tracking-wider block mb-1">
+              Engineered For Speed
+            </span>
+            <h2 className="text-[28px] sm:text-[32px] font-medium text-[#111111] leading-tight">
+              CORE DISCIPLINES & CAPABILITIES
+            </h2>
+          </div>
+
+          {/* 4-UP CATEGORY TILES (4:5 portrait on #f5f5f5) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              {
+                tag: "TECH STACK 01",
+                title: "VIBE CODING",
+                desc: "AI-Augmented fast prototyping & deployment pipeline",
+                cta: "Explore",
+                icon: <Flame className="w-8 h-8 text-[#111111]" />,
+              },
+              {
+                tag: "TECH STACK 02",
+                title: "NEXT.JS 15",
+                desc: "React 19 App Router & Server Components",
+                cta: "Inspect",
+                icon: <Terminal className="w-8 h-8 text-[#111111]" />,
+              },
+              {
+                tag: "DISCIPLINE 03",
+                title: "MILITARY GRIT",
+                desc: "Consistent daily commits during military service",
+                cta: "Read Story",
+                icon: <Shield className="w-8 h-8 text-[#111111]" />,
+              },
+              {
+                tag: "SYSTEMS 04",
+                title: "COMMERCE DESIGN",
+                desc: "Nike design system token fidelity & typography",
+                cta: "Tokens",
+                icon: <Layers className="w-8 h-8 text-[#111111]" />,
+              },
+            ].map((cat, idx) => (
+              <div
+                key={idx}
+                className="group relative aspect-[4/5] bg-[#f5f5f5] p-6 flex flex-col justify-between overflow-hidden"
+              >
+                <div className="flex justify-between items-start">
+                  <span className="text-[11px] font-bold text-[#707072] tracking-wider uppercase">
+                    {cat.tag}
+                  </span>
+                  <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center border border-[#cacacb] group-hover:scale-110 transition-transform">
+                    {cat.icon}
+                  </div>
+                </div>
+
+                <div>
+                  <h3 className="font-campaign text-3xl sm:text-4xl uppercase text-[#111111] leading-none mb-2">
+                    {cat.title}
+                  </h3>
+                  <p className="text-[13px] text-[#707072] font-medium leading-snug mb-4">
+                    {cat.desc}
+                  </p>
+
+                  <span className="inline-flex items-center gap-1.5 h-[36px] px-4 rounded-full bg-white text-[#111111] text-[13px] font-medium border border-[#cacacb] group-hover:bg-[#111111] group-hover:text-white transition-all">
+                    {cat.cta}
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* =========================================================================
+            6. MEMBER BENEFIT / EDITORIAL BANNER (member-benefit-card)
+        ========================================================================= */}
+        <section id="membership" className="py-6 mb-12">
+          <div className="relative w-full bg-[#111111] text-white p-8 sm:p-12 overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+            <div className="max-w-xl">
+              <span className="text-[12px] font-bold text-[#cacacb] tracking-widest uppercase block mb-2">
+                NIKE MEMBERSHIP / DEVELOPER PIPELINE
+              </span>
+              <h2 className="font-campaign text-5xl sm:text-6xl uppercase tracking-tight text-white leading-tight">
+                DEDICATION OVER MOTIVATION.
+              </h2>
+              <p className="text-white/80 text-[15px] sm:text-[16px] font-normal leading-relaxed mt-3">
+                낮에는 국방의 의무를, 밤에는 코딩을 합니다. 전역하는 그날까지
+                매일 한 걸음씩 완성해 나가는 손성우의 개발자 성장 스토리.
+              </p>
+
+              {/* ACTION PILLS */}
+              <div className="flex flex-wrap items-center gap-3 mt-6">
+                <button
+                  onClick={handleCheer}
+                  className="h-[48px] px-8 rounded-full bg-white text-[#111111] text-[15px] font-medium flex items-center gap-2 active:scale-95 transition-all hover:bg-[#f5f5f5]"
+                >
+                  <Heart className="w-4 h-4 fill-[#111111]" />
+                  <span>전역 응원하기 ({cheerCount})</span>
+                </button>
+
+                <button
+                  onClick={handleCopy}
+                  className="h-[48px] px-8 rounded-full bg-[#f5f5f5]/20 backdrop-blur text-white text-[15px] font-medium flex items-center gap-2 active:scale-95 transition-all hover:bg-[#f5f5f5]/30"
+                >
+                  {copiedEmail ? (
+                    <>
+                      <Check className="w-4 h-4 text-[#007d48]" />
+                      <span>이메일 주소 복사됨!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4" />
+                      <span>이메일 주소 복사</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* ATHLETE STATS / EMBLEM */}
+            <div className="flex-shrink-0 grid grid-cols-2 gap-4 w-full md:w-auto">
+              <div className="bg-white/10 p-5 rounded-none border-l-2 border-white">
+                <span className="text-[12px] text-[#cacacb] block uppercase">
+                  Current Status
+                </span>
+                <span className="font-campaign text-3xl text-white">
+                  ROK ARMY
+                </span>
+                <span className="text-[11px] text-white/60 block mt-1">
+                  국군장병 복무 중
+                </span>
+              </div>
+
+              <div className="bg-white/10 p-5 rounded-none border-l-2 border-white">
+                <span className="text-[12px] text-[#cacacb] block uppercase">
+                  Target Goal
+                </span>
+                <span className="font-campaign text-3xl text-white">
+                  2026 DISCHARGE
+                </span>
+                <span className="text-[11px] text-white/60 block mt-1">
+                  풀스택 개발자 취업
+                </span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* =========================================================================
+            7. PDP INFORMATION ACCORDION ROWS (pdp-disclosure-row: 24px padding, 1px hairline)
+        ========================================================================= */}
+        <section id="specifications" className="py-6 mb-16 max-w-4xl mx-auto">
+          <div className="mb-6">
+            <span className="text-[14px] font-medium text-[#707072] uppercase tracking-wider block mb-1">
+              Specifications
+            </span>
+            <h2 className="text-[28px] font-medium text-[#111111]">
+              PRODUCT DETAILS & DISCLOSURES
+            </h2>
+          </div>
+
+          <div className="divide-y divide-[#cacacb] border-y border-[#cacacb]">
+            {/* ROW 1: STATUS & BIO */}
+            <div className="py-6">
+              <button
+                onClick={() => toggleAccordion("status")}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <span className="text-[18px] font-medium text-[#111111] group-hover:text-[#707072] transition-colors">
+                  Developer Identity & Mission
+                </span>
+                {openAccordion === "status" ? (
+                  <ChevronDown className="w-5 h-5 text-[#111111]" />
                 ) : (
-                  <>
-                    <Copy className="w-4 h-4 stroke-[2.5]" />
-                    <span>이메일 주소 복사</span>
-                  </>
+                  <ChevronRight className="w-5 h-5 text-[#111111]" />
                 )}
               </button>
 
-              {/* Cheer Button */}
-              <button
-                onClick={handleCheer}
-                className={`w-full flex items-center justify-center gap-2 p-3 bg-[#FF6EA7] text-black border-[2.5px] border-black rounded-xl font-black text-xs sm:text-sm shadow-neo hover:shadow-neo-lg hover:-translate-y-0.5 active:translate-y-1 active:shadow-neo-sm transition-all ${
-                  hasCheered ? "scale-105 bg-[#F43F5E] text-white" : ""
-                }`}
-              >
-                <Heart
-                  className={`w-4 h-4 stroke-[2.5] ${
-                    hasCheered ? "fill-white animate-ping" : "fill-black"
-                  }`}
-                />
-                <span>전역 응원하기 ({cheerCount})</span>
-              </button>
+              {openAccordion === "status" && (
+                <div className="pt-4 text-[15px] text-[#39393b] leading-relaxed space-y-2">
+                  <p>
+                    <strong>소개:</strong> &ldquo;전역을 준비하는 코딩러&rdquo;
+                  </p>
+                  <p>
+                    <strong>신분:</strong> 대한민국 육군 국군장병
+                  </p>
+                  <p>
+                    <strong>목표:</strong> 군 복무 중 꾸준한 바이브 코딩 학습과
+                    실전 웹 프로젝트 빌딩을 통해 2026년 전역과 동시에 뛰어난
+                    개발자로 도약하는 것을 목표로 합니다.
+                  </p>
+                </div>
+              )}
             </div>
 
-            {/* Share profile button */}
-            <div className="w-full mt-3">
+            {/* ROW 2: TECH SPECIFICATIONS */}
+            <div className="py-6">
               <button
-                onClick={handleShare}
-                className="w-full py-2.5 bg-[#FAF7EE] border-2 border-black rounded-lg text-xs font-black text-black flex items-center justify-center gap-1.5 hover:bg-black hover:text-[#FFE600] transition-colors shadow-neo-sm"
+                onClick={() => toggleAccordion("tech")}
+                className="w-full flex items-center justify-between text-left group"
               >
-                <Share2 className="w-3.5 h-3.5 stroke-[2.5]" />
-                프로필 링크 공유하기
+                <span className="text-[18px] font-medium text-[#111111] group-hover:text-[#707072] transition-colors">
+                  Technical Specifications & Frameworks
+                </span>
+                {openAccordion === "tech" ? (
+                  <ChevronDown className="w-5 h-5 text-[#111111]" />
+                ) : (
+                  <ChevronRight className="w-5 h-5 text-[#111111]" />
+                )}
               </button>
+
+              {openAccordion === "tech" && (
+                <div className="pt-4 text-[15px] text-[#39393b] leading-relaxed space-y-2">
+                  <ul className="list-disc pl-5 space-y-1">
+                    <li>
+                      <strong>Frontend:</strong> Next.js 15 (App Router), React
+                      19, TypeScript
+                    </li>
+                    <li>
+                      <strong>Styling:</strong> Tailwind CSS, Nike Commerce
+                      Design System tokens
+                    </li>
+                    <li>
+                      <strong>Tools:</strong> Git, GitHub Actions, Vercel
+                      Deployment
+                    </li>
+                    <li>
+                      <strong>Methodology:</strong> Vibe Coding, AI-augmented
+                      development
+                    </li>
+                  </ul>
+                </div>
+              )}
+            </div>
+
+            {/* ROW 3: COLLABORATION & CONTACT */}
+            <div className="py-6">
+              <button
+                onClick={() => toggleAccordion("collab")}
+                className="w-full flex items-center justify-between text-left group"
+              >
+                <span className="text-[18px] font-medium text-[#111111] group-hover:text-[#707072] transition-colors">
+                  Shipping, Collaboration & Inquiries
+                </span>
+                {openAccordion === "collab" ? (
+                  <ChevronDown className="w-5 h-5 text-[#111111]" />
+                ) : (
+                  <ChevronRight className="w-5 h-5 text-[#111111]" />
+                )}
+              </button>
+
+              {openAccordion === "collab" && (
+                <div className="pt-4 text-[15px] text-[#39393b] leading-relaxed space-y-2">
+                  <p>
+                    언제든 프로젝트 협업이나 기술적인 질문, 커피챗 제안을 환영합니다.
+                  </p>
+                  <p>
+                    <strong>이메일:</strong> contact@example.com (24시간 내 회신)
+                  </p>
+                  <p>
+                    <strong>저장소:</strong>{" "}
+                    <a
+                      href="https://github.com/sonseongu234"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="underline font-medium text-[#111111]"
+                    >
+                      github.com/sonseongu234
+                    </a>
+                  </p>
+                </div>
+              )}
             </div>
           </div>
-        </div>
+        </section>
       </main>
 
-      {/* 3. NEOBRUTALISM FOOTER */}
-      <footer className="w-full border-t-[3px] border-black bg-white py-6 px-4 mt-8">
-        <div className="max-w-xl mx-auto flex flex-col items-center text-center gap-2">
-          <div className="inline-flex items-center gap-2 bg-black text-[#FFE600] font-black text-xs px-3 py-1 border border-black shadow-neo-sm">
-            <span>✦</span>
-            <span>DESIGNED IN NEOBRUTALISM STYLE</span>
-            <span>✦</span>
+      {/* =========================================================================
+          8. NIKE GLOBAL FOOTER (footer: 1px hairline top divider, 4 columns, 9px utility)
+      ========================================================================= */}
+      <footer className="w-full border-t border-[#cacacb] bg-white pt-12 pb-8 px-6 sm:px-12 text-[#111111]">
+        <div className="max-w-[1440px] mx-auto">
+          {/* FOUR COLUMNS */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+            <div>
+              <h4 className="font-campaign text-lg uppercase tracking-wider text-[#111111] mb-3">
+                RESOURCES
+              </h4>
+              <ul className="space-y-2.5 text-[14px] font-medium text-[#707072]">
+                <li>
+                  <a href="#featured-projects" className="hover:text-[#111111]">
+                    Featured Projects
+                  </a>
+                </li>
+                <li>
+                  <a href="https://velog.io" className="hover:text-[#111111]">
+                    Study Dev Log
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/sonseongu234"
+                    className="hover:text-[#111111]"
+                  >
+                    GitHub Repositories
+                  </a>
+                </li>
+                <li>
+                  <a href="#membership" className="hover:text-[#111111]">
+                    Developer Membership
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-campaign text-lg uppercase tracking-wider text-[#111111] mb-3">
+                HELP & SUPPORT
+              </h4>
+              <ul className="space-y-2.5 text-[14px] font-medium text-[#707072]">
+                <li>
+                  <a
+                    href="mailto:contact@example.com"
+                    className="hover:text-[#111111]"
+                  >
+                    Contact Seongwoo
+                  </a>
+                </li>
+                <li>
+                  <a href="#specifications" className="hover:text-[#111111]">
+                    Disclosures & Specs
+                  </a>
+                </li>
+                <li>
+                  <button onClick={handleCopy} className="hover:text-[#111111]">
+                    Copy Direct Email
+                  </button>
+                </li>
+                <li>
+                  <a href="#capabilities" className="hover:text-[#111111]">
+                    System Architecture
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-campaign text-lg uppercase tracking-wider text-[#111111] mb-3">
+                ABOUT SEONGWOO
+              </h4>
+              <ul className="space-y-2.5 text-[14px] font-medium text-[#707072]">
+                <li>
+                  <span className="text-[#39393b]">전역을 준비하는 코딩러</span>
+                </li>
+                <li>
+                  <span>대한민국 육군 복무</span>
+                </li>
+                <li>
+                  <span>바이브 코딩 & 풀스택</span>
+                </li>
+                <li>
+                  <span>2026 Discharge Target</span>
+                </li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 className="font-campaign text-lg uppercase tracking-wider text-[#111111] mb-3">
+                COMMERCE SYSTEM
+              </h4>
+              <ul className="space-y-2.5 text-[14px] font-medium text-[#707072]">
+                <li>
+                  <span>Nike Design System Specs</span>
+                </li>
+                <li>
+                  <span>Next.js 15 App Router</span>
+                </li>
+                <li>
+                  <span>Tailwind CSS Token Fidelity</span>
+                </li>
+                <li>
+                  <span>MIT License Open Source</span>
+                </li>
+              </ul>
+            </div>
           </div>
 
-          <p className="font-black text-xs text-black mt-2">
-            © {new Date().getFullYear()} 손성우 (Son Seong Woo). All rights reserved.
-          </p>
+          {/* DIVIDER LINE */}
+          <div className="h-[1px] bg-[#e5e5e5] mb-6"></div>
 
-          <p className="text-[11px] font-bold text-black/70">
-            열정과 끈기로 매일 한 걸음씩 · 군 생활과 코딩을 병행하며 전역을 향해 달립니다 🚀
-          </p>
+          {/* BOTTOM UTILITY / FINE PRINT ROW (typography.utility-xs: 9px font-medium #707072) */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] sm:text-[9px] font-medium text-[#707072] uppercase tracking-wider">
+            <div className="flex items-center gap-2">
+              <span className="text-[#111111] font-semibold">
+                대한민국 (KOREA)
+              </span>
+              <span>·</span>
+              <span>
+                © {new Date().getFullYear()} SON SEONG WOO. ALL RIGHTS RESERVED.
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-4">
+              <span>NIKE EDITORIAL COMMERCE SYSTEM</span>
+              <span>GUIDES</span>
+              <span>TERMS OF SALE</span>
+              <span>PRIVACY POLICY</span>
+            </div>
+          </div>
         </div>
       </footer>
     </div>

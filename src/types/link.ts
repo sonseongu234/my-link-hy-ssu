@@ -4,7 +4,9 @@ export interface LinkItem {
   url: string;
   description?: string;
   icon?: string;
-  category?: string;
+  badge?: string;
+  bgColor?: string;
+  tag?: string;
 }
 
 export interface UserProfile {

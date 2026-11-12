@@ -8,6 +8,9 @@ export default {
   ],
   theme: {
     extend: {
+      screens: {
+        xs: "480px",
+      },
       colors: {
         nike: {
           ink: "#111111",
@@ -26,8 +29,8 @@ export default {
         },
       },
       fontFamily: {
-        campaign: ["var(--font-bebas)", "Bebas Neue", "Impact", "sans-serif"],
-        sans: ["var(--font-inter)", "Inter", "Helvetica Now Text", "Helvetica Neue", "Arial", "sans-serif"],
+        campaign: ["'Bebas Neue'", "Impact", "sans-serif"],
+        sans: ["'Inter'", "Helvetica Neue", "Arial", "sans-serif"],
       },
       spacing: {
         section: "48px",

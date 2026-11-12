@@ -32,23 +32,23 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
         {/* PROMO BADGE (TOP-LEFT OF CARD) */}
         {item.badge && (
           <div className="absolute top-3 left-3 z-10">
-            <span className="inline-block bg-white text-[#111111] text-[12px] font-medium tracking-wide uppercase px-3 py-1 rounded-full border border-[#cacacb]">
+            <span className="inline-block bg-white text-[#111111] text-[11px] sm:text-[12px] font-medium tracking-wide uppercase px-2.5 sm:px-3 py-1 rounded-full border border-[#cacacb]">
               {item.badge}
             </span>
           </div>
         )}
 
         {/* GRAPHIC STAGE */}
-        <div className="w-full h-full flex items-center justify-center p-8 transition-transform duration-300 group-hover:scale-105">
+        <div className="w-full h-full flex items-center justify-center p-6 sm:p-8 transition-transform duration-300 group-hover:scale-105">
           {item.graphic}
         </div>
       </div>
 
       {/* METADATA ROWS WITH 8px (spacing.sm) GAP */}
       <div className="pt-3 flex flex-col gap-1">
-        {/* SWATCH DOT ROW (12px circular with active concentric ring) */}
+        {/* SWATCH DOT ROW (12px circular with active concentric ring & touch target padding) */}
         {item.swatches && item.swatches.length > 0 && (
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-1.5 sm:gap-2 mb-1">
             {item.swatches.map((swatch, idx) => {
               const isActive = activeSwatch === idx;
               return (
@@ -57,47 +57,52 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
                   type="button"
                   onClick={() => setActiveSwatch(idx)}
                   title={swatch.name}
-                  className={`w-3 h-3 rounded-full transition-all duration-150 ${
-                    isActive
-                      ? "ring-2 ring-offset-2 ring-[#111111]"
-                      : "opacity-80 hover:opacity-100"
-                  } ${
-                    swatch.color.toLowerCase() === "#ffffff"
-                      ? "border border-[#cacacb]"
-                      : ""
-                  }`}
-                  style={{ backgroundColor: swatch.color }}
-                />
+                  className="p-1 -m-1 inline-flex items-center justify-center focus:outline-none"
+                  aria-label={swatch.name}
+                >
+                  <span
+                    className={`w-3 h-3 rounded-full transition-all duration-150 inline-block ${
+                      isActive
+                        ? "ring-2 ring-offset-2 ring-[#111111]"
+                        : "opacity-80 hover:opacity-100"
+                    } ${
+                      swatch.color.toLowerCase() === "#ffffff"
+                        ? "border border-[#cacacb]"
+                        : ""
+                    }`}
+                    style={{ backgroundColor: swatch.color }}
+                  />
+                </button>
               );
             })}
-            <span className="text-[12px] text-[#707072] font-medium ml-1">
+            <span className="text-[11px] sm:text-[12px] text-[#707072] font-medium ml-1">
               {item.swatches.length} Colors
             </span>
           </div>
         )}
 
         {/* PRODUCT NAME (typography.body-strong: 16px, 500, #111111) */}
-        <h3 className="text-[16px] font-medium text-[#111111] leading-tight group-hover:text-[#707072] transition-colors">
+        <h3 className="text-[15px] sm:text-[16px] font-medium text-[#111111] leading-tight group-hover:text-[#707072] transition-colors">
           {item.title}
         </h3>
 
         {/* CATEGORY SUBTITLE (typography.caption-md: 14px, 500, #707072) */}
-        <p className="text-[14px] font-medium text-[#707072] leading-tight">
+        <p className="text-[13px] sm:text-[14px] font-medium text-[#707072] leading-tight">
           {item.subtitle}
         </p>
 
         {/* PRICE ROW */}
-        <div className="pt-1 flex items-center gap-2 text-[16px] font-medium leading-tight">
+        <div className="pt-1 flex items-center gap-2 text-[15px] sm:text-[16px] font-medium leading-tight">
           {item.salePrice ? (
             <>
               <span className="text-[#d30005]">{item.salePrice}</span>
               {item.originalPrice && (
-                <span className="text-[#707072] line-through text-[14px]">
+                <span className="text-[#707072] line-through text-[13px] sm:text-[14px]">
                   {item.originalPrice}
                 </span>
               )}
               {item.discountRate && (
-                <span className="text-[#d30005] text-[13px] font-medium">
+                <span className="text-[#d30005] text-[12px] sm:text-[13px] font-medium">
                   {item.discountRate} off
                 </span>
               )}
@@ -113,7 +118,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ item }) => {
             href={item.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center justify-center gap-2 w-full h-[48px] px-6 rounded-full bg-[#111111] text-white text-[15px] font-medium transition-all duration-150 active:scale-95 active:opacity-70 hover:bg-[#39393b]"
+            className="inline-flex items-center justify-center gap-2 w-full h-[48px] px-6 rounded-full bg-[#111111] text-white text-[14px] sm:text-[15px] font-medium transition-all duration-150 active:scale-95 active:opacity-70 hover:bg-[#39393b]"
           >
             <span>{item.actionText}</span>
             <ArrowUpRight className="w-4 h-4" />

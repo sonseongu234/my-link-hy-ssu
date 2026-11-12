@@ -206,11 +206,11 @@ export default function Home() {
       <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#e5e5e5]">
         <div className="max-w-[1440px] mx-auto h-[60px] px-4 sm:px-8 lg:px-12 flex items-center justify-between">
           {/* LEFT: NIKE SWOOSH LOGO + MONOGRAM */}
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
             {/* Mobile Hamburger Menu Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#f5f5f5] transition-colors -ml-2"
+              className="md:hidden w-10 h-10 rounded-full flex items-center justify-center hover:bg-[#f5f5f5] transition-colors -ml-2 flex-shrink-0"
               aria-label="Toggle Navigation Menu"
             >
               {mobileMenuOpen ? (
@@ -220,22 +220,22 @@ export default function Home() {
               )}
             </button>
 
-            <a href="#" className="flex items-center gap-2 sm:gap-3">
+            <a href="#" className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
               <svg
-                className="w-12 sm:w-14 h-6 sm:h-7 text-[#111111]"
+                className="w-10 sm:w-12 md:w-14 h-5 sm:h-6 md:h-7 text-[#111111] flex-shrink-0"
                 viewBox="0 0 24 24"
                 fill="currentColor"
               >
                 <path d="M21.707 5.293c-.27-.27-.69-.33-1.02-.15L3.92 14.18c-1.57.84-2.22 2.68-1.53 4.29.61 1.43 2.05 2.29 3.59 2.29.56 0 1.13-.11 1.68-.35l14.07-6.03c.59-.25.87-.94.62-1.53s-.94-.87-1.53-.62l-14.07 6.03c-.63.27-1.37-.02-1.65-.67-.28-.66.02-1.42.66-1.76L18.47 7.02c.86-.46 1.89-.3 2.58.39.2.2.47.3.74.3.18 0 .37-.05.53-.15.48-.31.62-.95.31-1.43-.24-.37-.58-.65-.92-.84z" />
               </svg>
-              <span className="font-campaign text-xl sm:text-2xl tracking-tight uppercase text-[#111111]">
+              <span className="font-campaign text-xl sm:text-2xl tracking-tight uppercase text-[#111111] whitespace-nowrap select-none">
                 SON SEONG WOO
               </span>
             </a>
           </div>
 
           {/* CENTER: DESKTOP NAV ITEMS */}
-          <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-[15px] lg:text-[16px] font-medium text-[#111111]">
+          <nav className="hidden md:flex items-center gap-3.5 lg:gap-6 xl:gap-8 text-[13px] lg:text-[15px] xl:text-[16px] font-medium text-[#111111] whitespace-nowrap">
             <a
               href="#"
               className="relative py-4 border-b-2 border-[#111111] cursor-pointer"
@@ -269,9 +269,9 @@ export default function Home() {
           </nav>
 
           {/* RIGHT: SEARCH PILL & CIRCULAR CONTROLS */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
             {/* Desktop Search Pill */}
-            <div className="hidden lg:flex items-center gap-2 bg-[#f5f5f5] h-[40px] px-4 rounded-full text-[14px] text-[#707072] w-[180px] xl:w-[220px] focus-within:ring-2 focus-within:ring-[#111111]">
+            <div className="hidden xl:flex items-center gap-2 bg-[#f5f5f5] h-[40px] px-4 rounded-full text-[14px] text-[#707072] w-[180px] xl:w-[220px] focus-within:ring-2 focus-within:ring-[#111111]">
               <Search className="w-4 h-4 text-[#111111]" />
               <input
                 type="text"
@@ -280,10 +280,10 @@ export default function Home() {
               />
             </div>
 
-            {/* Mobile Search Toggle Icon */}
+            {/* Mobile/Tablet Search Toggle Icon */}
             <button
               onClick={() => setMobileSearchOpen(!mobileSearchOpen)}
-              className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center bg-[#f5f5f5] hover:bg-[#e5e5e5] transition-colors"
+              className="xl:hidden w-10 h-10 rounded-full flex items-center justify-center bg-[#f5f5f5] hover:bg-[#e5e5e5] transition-colors flex-shrink-0"
               aria-label="Toggle Search"
             >
               <Search className="w-4 h-4 text-[#111111]" />
@@ -317,9 +317,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* MOBILE SEARCH OVERLAY (when toggled on mobile) */}
+        {/* MOBILE/TABLET SEARCH OVERLAY (when toggled) */}
         {mobileSearchOpen && (
-          <div className="lg:hidden px-4 py-3 bg-[#f5f5f5] border-t border-[#e5e5e5] flex items-center gap-2">
+          <div className="xl:hidden px-4 py-3 bg-[#f5f5f5] border-t border-[#e5e5e5] flex items-center gap-2">
             <Search className="w-4 h-4 text-[#111111]" />
             <input
               type="text"
@@ -940,12 +940,12 @@ export default function Home() {
 
           {/* BOTTOM UTILITY / FINE PRINT ROW */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4 text-[10px] sm:text-[9px] font-medium text-[#707072] uppercase tracking-wider">
-            <div className="flex items-center gap-2">
-              <span className="text-[#111111] font-semibold">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[#111111] font-semibold whitespace-nowrap">
                 대한민국 (KOREA)
               </span>
               <span>·</span>
-              <span>
+              <span className="whitespace-nowrap">
                 © {new Date().getFullYear()} SON SEONG WOO. ALL RIGHTS RESERVED.
               </span>
             </div>

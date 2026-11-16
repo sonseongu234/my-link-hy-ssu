@@ -1,8 +1,8 @@
 # 📄 마이링크(MyLink) — PRD (기능 정의서)
 
-> **버전:** v1.0 (MVP)  
-> **작성일:** 2026-11-07  
-> **상태:** Draft
+> **버전:** v1.1 (MVP)  
+> **작성일:** 2026-11-07 (수정일: 2026-11-14)  
+> **상태:** In Review (shadcn/ui 디자인 시스템 도입)
 
 ---
 
@@ -224,9 +224,11 @@ flowchart LR
 
 | 레이어 | 기술 | 비고 |
 |---|---|---|
-| **프레임워크** | Next.js 14+ (App Router) | SSR/SSG 활용 |
+| **프레임워크** | Next.js 15+ (App Router) / React 19 | SSR/SSG 활용 |
 | **언어** | TypeScript | 타입 안전성 |
-| **스타일링** | Tailwind CSS | 유틸리티 퍼스트 |
+| **디자인 시스템 / UI** | **shadcn/ui** | 모든 컴포넌트의 표준 UI 기반, 접근성(WAI-ARIA) 내장 |
+| **스타일링** | Tailwind CSS v4 | CSS-first (`@theme`), 유틸리티 퍼스트 |
+| **아이콘 라이브러리** | Lucide React | 일관된 모던 아이콘 시스템 |
 | **상태 관리** | React Context / Zustand | 경량 상태 관리 |
 | **인증** | Firebase Auth | Google, Kakao Provider |
 | **데이터베이스** | Cloud Firestore | NoSQL, 실시간 동기화 |
@@ -234,7 +236,23 @@ flowchart LR
 | **배포** | Vercel | Edge Network, 자동 배포 |
 | **드래그 앤 드롭** | @dnd-kit/core | 접근성 지원 |
 
-### 5.2 Firestore 데이터 모델
+### 5.2 디자인 시스템 (Design System) 원칙
+
+> [!IMPORTANT]
+> **향후 모든 UI/UX 화면 설계 및 프론트엔드 컴포넌트 구현은 `shadcn/ui` 디자인 시스템을 기반으로 진행합니다.**
+> 개별 스타일을 임의로 하드코딩하지 않고, shadcn/ui의 표준 컴포넌트 프리미티브와 디자인 토큰을 최우선으로 활용합니다.
+
+1. **컴포넌트 소유형 아키텍처**
+   - 무거운 외부 UI 패키지 전체 설치 대신, `npx shadcn@latest add <component>` 방식으로 필요한 컴포넌트 코드(`src/components/ui/`)를 직접 프로젝트에 포함하여 제어권 및 커스텀 유연성 확보.
+2. **Tailwind CSS v4 & 디자인 토큰**
+   - `src/app/globals.css`의 `@theme` 및 `@theme inline` 구조를 통한 일관된 OKLCH 컬러 시스템(배경, 전경, 보더, 뮤트, 액센트, 디스트럭티브 등) 활용.
+   - 다크 모드(`dark:`) 및 고대비 색상 지원을 위한 CSS 변수 체계 준수.
+3. **접근성(Accessibility) 기본 준수**
+   - Radix UI 기반 헤드리스 프리미티브를 사용하여 키보드 내비게이션, 스크린 리더 호환, WAI-ARIA 표준 완전 준수.
+4. **일관된 인터랙션 및 피드백**
+   - 버튼(Button), 다이얼로그(Dialog), 시트(Sheet), 툴팁(Tooltip), 토글(Switch), 드롭다운(Dropdown Menu) 등 인터랙션 요소는 shadcn/ui 공식 패턴을 따름.
+
+### 5.3 Firestore 데이터 모델
 
 ```
 users/{userId}
@@ -255,6 +273,39 @@ users/{userId}
 usernames/{username}           // username 중복 방지용
 └── userId: string
 ```
+
+### 5.4 개발 및 테스트용 더미 데이터 (Mock Data) 명세
+
+> [!NOTE]
+> 백엔드 및 DB 연동 이전 단계에서 UI/UX 컴포넌트 렌더링, 레이아웃 검증, 반응형 테스트를 위해 표준화된 더미 데이터 및 Mock API 응답 규격을 사용합니다.
+
+#### 5.4.1 더미 데이터 소스 및 저장 위치
+- **JSON 파일 (단일 리스트)**: `src/data/simple-links.json` (직관적인 링크 배열)
+- **JSON 파일 (MOCK API Envelope)**: `src/data/mock-links.json` (`statusCode`, `data` 구조의 RESTful 응답)
+- **TypeScript 데이터 모듈**: `src/data/dummyLinks.tsx` (컴포넌트 직접 import용 정적 데이터)
+
+#### 5.4.2 데이터 스키마 (Core Fields)
+모든 링크 더미 데이터는 식별 및 UI 표현을 위해 아래 핵심 필드를 필수로 포함합니다.
+
+| 필드명 | 타입 | 설명 | 예시 |
+|---|---|---|---|
+| `id` | `string` | 링크 고유 식별자 | `"github"`, `"velog"` |
+| `title` | `string` | 링크 카드 제목 (최대 40자) | `"GitHub"`, `"Velog 기술 블로그"` |
+| `description` | `string` | 링크 상세 설명 / 부제 | `"오픈소스 기여 및 최신 웹 아키텍처 저장소"` |
+| `url` | `string` | 이동할 대상 URL | `"https://github.com/sonseongu234"` |
+| `icon` | `string` | Lucide React 아이콘 매핑 키 | `"github"`, `"code"`, `"book-open"`, `"globe"` |
+| `badge` | `string` (옵션) | 카드 상단 강조 뱃지 텍스트 | `"JUST IN"`, `"Active"`, `"Featured"` |
+| `category` | `string` (옵션) | 필터링 카테고리 | `"repo"`, `"blog"`, `"career"`, `"contact"` |
+
+#### 5.4.3 기본 제공 목업 데이터 세트 (총 8종)
+1. **GitHub** (`repo`): 오픈소스 기여 및 최신 웹 아키텍처 토이 프로젝트 저장소
+2. **My Link Project** (`repo`): Nike Commerce 스타일의 Link-in-Bio 웹 애플리케이션
+3. **Velog 기술 블로그** (`blog`): 프론트엔드 아키텍처, Next.js 15, 성능 최적화 학습 기록
+4. **인터랙티브 포트폴리오** (`career`): 3D Canvas와 인터랙티브 인터페이스를 담은 작업물 쇼케이스
+5. **경력 기술서 / 이력서** (`career`): 학력, 업무 경험, 기술 스택 및 프로젝트 성과 상세 정리
+6. **AI 코드 리뷰 도구** (`repo`): LLM 기반 자동 PR 피드백 및 코드 품질 분석 자동화 봇
+7. **LinkedIn** (`contact`): 비즈니스 네트워킹 및 채용·커리어 프로필
+8. **이메일 문의** (`contact`): 프로젝트 협업, 외주 개발 및 채용 관련 1:1 다이렉트 문의
 
 ---
 
@@ -327,4 +378,4 @@ usernames/{username}           // username 중복 방지용
 ---
 
 > [!IMPORTANT]
-> 이 PRD는 MVP 범위를 정의합니다. 개발 착수 전 와이어프레임/디자인 시안 검토 단계를 거치는 것을 권장합니다.
+> 이 PRD는 MVP 범위를 정의합니다. 개발 착수 전 와이어프레임/디자인 시안 검토 단계를 거치는 것을 권장하며, 모든 UI 구현은 `shadcn/ui` 디자인 시스템 표준을 기반으로 진행합니다.

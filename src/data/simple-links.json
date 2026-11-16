@@ -1,0 +1,74 @@
+[
+  {
+    "id": "github",
+    "title": "GitHub",
+    "description": "오픈소스 기여 및 최신 웹 아키텍처 토이 프로젝트 저장소",
+    "url": "https://github.com/sonseongu234",
+    "icon": "github",
+    "badge": "JUST IN",
+    "category": "repo"
+  },
+  {
+    "id": "my-link-repo",
+    "title": "My Link Project",
+    "description": "Nike Commerce 스타일의 Link-in-Bio 웹 애플리케이션",
+    "url": "https://github.com/sonseongu234/my-link-hy-ssu",
+    "icon": "code",
+    "badge": "Active",
+    "category": "repo"
+  },
+  {
+    "id": "velog",
+    "title": "Velog 기술 블로그",
+    "description": "프론트엔드 아키텍처, Next.js 15, 성능 최적화 학습 기록",
+    "url": "https://velog.io",
+    "icon": "book-open",
+    "badge": "Weekly",
+    "category": "blog"
+  },
+  {
+    "id": "portfolio",
+    "title": "인터랙티브 포트폴리오",
+    "description": "3D Canvas와 인터랙티브 인터페이스를 담은 작업물 쇼케이스",
+    "url": "https://portfolio.example.com",
+    "icon": "globe",
+    "badge": "Featured",
+    "category": "career"
+  },
+  {
+    "id": "resume",
+    "title": "경력 기술서 / 이력서",
+    "description": "학력, 업무 경험, 기술 스택 및 프로젝트 성과 상세 정리",
+    "url": "https://notion.so/resume-sample",
+    "icon": "briefcase",
+    "badge": "Notion",
+    "category": "career"
+  },
+  {
+    "id": "ai-code-reviewer",
+    "title": "AI 코드 리뷰 도구",
+    "description": "LLM 기반 자동 PR 피드백 및 코드 품질 분석 자동화 봇",
+    "url": "https://github.com/sonseongu234",
+    "icon": "sparkles",
+    "badge": "v1.2",
+    "category": "repo"
+  },
+  {
+    "id": "linkedin",
+    "title": "LinkedIn",
+    "description": "비즈니스 네트워킹 및 채용·커리어 프로필",
+    "url": "https://linkedin.com/in/example",
+    "icon": "linkedin",
+    "badge": "Connect",
+    "category": "contact"
+  },
+  {
+    "id": "contact-email",
+    "title": "이메일 문의",
+    "description": "프로젝트 협업, 외주 개발 및 채용 관련 1:1 다이렉트 문의",
+    "url": "mailto:contact@example.com",
+    "icon": "mail",
+    "badge": "Open to Work",
+    "category": "contact"
+  }
+]

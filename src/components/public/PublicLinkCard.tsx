@@ -26,6 +26,7 @@ export interface PublicLinkData {
   badge?: string;
   category?: string;
   isActive?: boolean;
+  createdAt?: number | string | Date;
 }
 
 interface PublicLinkCardProps {
@@ -46,7 +47,26 @@ const ICON_COMPONENTS: Record<string, React.ReactNode> = {
   layers: <Layers className="w-5 h-5 text-[#111111]" />,
 };
 
+function formatCreatedAt(val?: number | string | Date): string | null {
+  if (!val) return null;
+  const time = typeof val === "number"
+    ? val
+    : typeof val === "string"
+    ? new Date(val).getTime()
+    : val.getTime();
+  if (!time || isNaN(time)) return null;
+
+  const now = Date.now();
+  const diffSec = Math.floor((now - time) / 1000);
+  if (diffSec < 60) return "방금 전";
+  if (diffSec < 3600) return `${Math.floor(diffSec / 60)}분 전`;
+  if (diffSec < 86400) return `${Math.floor(diffSec / 3600)}시간 전`;
+  const d = new Date(time);
+  return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
+}
+
 export function PublicLinkCard({ link, index }: PublicLinkCardProps) {
+  const formattedDate = formatCreatedAt(link.createdAt);
   const icon = link.icon ? (
     ICON_COMPONENTS[link.icon] || <Globe className="w-5 h-5 text-[#111111]" />
   ) : (
@@ -101,6 +121,12 @@ export function PublicLinkCard({ link, index }: PublicLinkCardProps) {
                 >
                   {link.badge}
                 </Badge>
+              )}
+
+              {formattedDate && (
+                <span className="text-[10px] sm:text-[11px] text-[#8e8e93] font-mono tracking-tight ml-auto sm:ml-0">
+                  {formattedDate}
+                </span>
               )}
             </div>
 

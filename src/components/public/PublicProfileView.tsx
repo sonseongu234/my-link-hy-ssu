@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { SocialIconBar, SocialLink } from "./SocialIconBar";
 import { PublicLinkCard, PublicLinkData } from "./PublicLinkCard";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { AddLinkDialog } from "@/components/dashboard/AddLinkDialog";
+import { subscribeToLinks } from "@/services/linkService";
 import {
   Share2,
   Check,
@@ -17,6 +18,7 @@ import {
   Link as LinkIcon,
   Copy,
   Plus,
+  ArrowUpDown,
 } from "lucide-react";
 
 export interface PublicProfileData {
@@ -137,18 +139,44 @@ export function PublicProfileView({
   const [copiedUrl, setCopiedUrl] = useState<boolean>(false);
   const [cheerCount, setCheerCount] = useState<number>(128);
   const [hasCheered, setHasCheered] = useState<boolean>(false);
+  const [sortBy, setSortBy] = useState<"latest" | "default">("latest");
 
-  // ── 로컬 링크 상태 (서버 미연결 시 로컬에서 관리) ──
+  // ── 링크 상태 관리 (Firestore users/anonymous/links 실시간 동기화) ──
   const [localLinks, setLocalLinks] = useState<PublicLinkData[]>(initialProfile.links);
   const [addLinkOpen, setAddLinkOpen] = useState<boolean>(false);
 
+  useEffect(() => {
+    // Firestore users/anonymous/links 실시간 구독
+    const unsubscribe = subscribeToLinks(
+      (firestoreLinks) => {
+        if (firestoreLinks.length > 0) {
+          setLocalLinks(() => {
+            // Firestore에 저장된 링크를 우선 배치하고, 중복되지 않는 기본 링크를 뒤에 유지
+            const remainingInitial = initialProfile.links.filter(
+              (init) => !firestoreLinks.some((f) => f.id === init.id)
+            );
+            return [...firestoreLinks, ...remainingInitial];
+          });
+        }
+      },
+      (error) => {
+        console.error("Firestore links 실시간 동기화 실패:", error);
+      }
+    );
+
+    return () => unsubscribe();
+  }, [initialProfile.links]);
+
   const handleAddLink = (newLink: PublicLinkData) => {
-    setLocalLinks((prev) => [newLink, ...prev]);
+    setLocalLinks((prev) => {
+      if (prev.some((l) => l.id === newLink.id)) return prev;
+      return [newLink, ...prev];
+    });
   };
 
-  // Filter links based on category & search query
+  // Filter & Sort links based on category, search query & createdAt
   const filteredLinks = useMemo(() => {
-    return localLinks.filter((link) => {
+    const list = localLinks.filter((link) => {
       const matchesCategory =
         activeCategory === "all" || link.category === activeCategory;
       const query = searchQuery.trim().toLowerCase();
@@ -160,7 +188,23 @@ export function PublicProfileView({
 
       return matchesCategory && matchesSearch;
     });
-  }, [localLinks, activeCategory, searchQuery]);
+
+    if (sortBy === "latest") {
+      // createdAt 기준 최신순 정렬
+      return [...list].sort((a, b) => {
+        const timeA = typeof a.createdAt === "number"
+          ? a.createdAt
+          : a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const timeB = typeof b.createdAt === "number"
+          ? b.createdAt
+          : b.createdAt ? new Date(b.createdAt).getTime() : 0;
+
+        return timeB - timeA;
+      });
+    }
+
+    return list;
+  }, [localLinks, activeCategory, searchQuery, sortBy]);
 
   const handleCopyUrl = async () => {
     try {
@@ -381,9 +425,24 @@ export function PublicProfileView({
               Official Directory
             </span>
             <div className="flex items-center gap-2">
-              <span className="text-[11px] text-[#707072] font-mono">
-                {filteredLinks.length} Items Listed
+              <span className="text-[11px] text-[#707072] font-mono hidden xs:inline">
+                {filteredLinks.length} Items
               </span>
+              {/* ── 최신순 정렬 토글 버튼 ── */}
+              <Button
+                variant={sortBy === "latest" ? "nikePrimary" : "nikeOutline"}
+                size="sm"
+                onClick={() => setSortBy((prev) => (prev === "latest" ? "default" : "latest"))}
+                className="gap-1.5 h-8 px-2.5 text-[11px]"
+                title={
+                  sortBy === "latest"
+                    ? "현재: createdAt 최신순 정렬 중 (클릭 시 기본순)"
+                    : "현재: 기본순 정렬 중 (클릭 시 최신순)"
+                }
+              >
+                <ArrowUpDown className="w-3 h-3" />
+                <span>{sortBy === "latest" ? "최신순" : "기본순"}</span>
+              </Button>
               {/* ── 링크 추가 버튼 ── */}
               <Button
                 variant="nikePrimary"

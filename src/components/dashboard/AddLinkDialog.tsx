@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PublicLinkData } from "@/components/public/PublicLinkCard";
+import { addLinkToFirestore } from "@/services/linkService";
 import {
   Link as LinkIcon,
   Globe,
@@ -209,6 +210,8 @@ export function AddLinkDialog({
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // 에러 필드로 포커스 이동을 위한 ref
   const titleRef = useRef<HTMLInputElement>(null);
@@ -220,6 +223,8 @@ export function AddLinkDialog({
     setTouched({});
     setErrors({});
     setSubmitted(false);
+    setIsSubmitting(false);
+    setSubmitError(null);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -258,9 +263,10 @@ export function AddLinkDialog({
     }
   };
 
-  // ── 제출 ──
-  const handleSubmit = (e: React.FormEvent) => {
+  // ── 제출 (Firestore users/anonymous/links에 저장) ──
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
     // 모든 필드 touched 처리
     setTouched({ title: true, url: true, description: true, badge: true });
@@ -279,23 +285,33 @@ export function AddLinkDialog({
     }
     if (newErrors.description || newErrors.badge) return;
 
-    // 검증 통과 → 링크 생성
-    const newLink: PublicLinkData = {
-      id:          `link-${Date.now()}`,
-      title:       form.title.trim(),
-      url:         form.url.trim(),
-      description: form.description.trim() || undefined,
-      icon:        form.icon,
-      badge:       form.badge.trim().toUpperCase() || undefined,
-      category:    form.category,
-      isActive:    true,
-    };
+    setIsSubmitting(true);
+    setSubmitError(null);
 
-    setSubmitted(true);
-    setTimeout(() => {
-      onAddLink(newLink);
-      handleClose();
-    }, 700);
+    try {
+      // Firestore (users/anonymous/links)에 저장
+      const savedLink = await addLinkToFirestore({
+        title: form.title.trim(),
+        url: form.url.trim(),
+        description: form.description.trim() || undefined,
+        icon: form.icon,
+        badge: form.badge.trim().toUpperCase() || undefined,
+        category: form.category,
+        isActive: true,
+      });
+
+      setSubmitted(true);
+      setTimeout(() => {
+        onAddLink(savedLink);
+        handleClose();
+      }, 700);
+    } catch (err: unknown) {
+      console.error("[AddLinkDialog] Firestore 저장 오류:", err);
+      const errorMessage =
+        err instanceof Error ? err.message : "알 수 없는 오류가 발생했습니다.";
+      setSubmitError(`Firestore에 저장하지 못했습니다: ${errorMessage}`);
+      setIsSubmitting(false);
+    }
   };
 
   const SelectedIcon = ICON_OPTIONS.find((o) => o.key === form.icon)?.icon ?? Globe;
@@ -324,6 +340,17 @@ export function AddLinkDialog({
             </DialogDescription>
           </DialogHeader>
         </div>
+
+        {/* ── 에러 알림 ── */}
+        {submitError && (
+          <div className="mx-6 mt-4 flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-700 rounded-xl px-4 py-3 text-xs flex-shrink-0">
+            <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-red-600" />
+            <div className="flex-1">
+              <p className="font-semibold text-red-800">저장 실패</p>
+              <p className="mt-0.5">{submitError}</p>
+            </div>
+          </div>
+        )}
 
         {/* ── 한도 초과 경고 ── */}
         {isAtLimit && (
@@ -579,17 +606,28 @@ export function AddLinkDialog({
                 variant="nikeSecondary"
                 className="flex-1"
                 onClick={handleClose}
+                disabled={isSubmitting}
               >
                 취소
               </Button>
               <Button
                 type="submit"
                 variant="nikePrimary"
-                className={cn("flex-1 transition-opacity", hasBlockingError && "opacity-60")}
-                disabled={isAtLimit}
-                aria-disabled={hasBlockingError}
+                className={cn(
+                  "flex-1 transition-all gap-2",
+                  (hasBlockingError || isSubmitting) && "opacity-60 cursor-not-allowed"
+                )}
+                disabled={isAtLimit || isSubmitting}
+                aria-disabled={hasBlockingError || isSubmitting}
               >
-                링크 추가
+                {isSubmitting ? (
+                  <>
+                    <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    <span>저장 중...</span>
+                  </>
+                ) : (
+                  "링크 추가"
+                )}
               </Button>
             </DialogFooter>
           </form>

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { AddLinkDialog } from "@/components/dashboard/AddLinkDialog";
+import { DeleteLinkDialog } from "@/components/dashboard/DeleteLinkDialog";
 import { subscribeToLinks } from "@/services/linkService";
 import {
   Share2,
@@ -144,6 +145,8 @@ export function PublicProfileView({
   // ── 링크 상태 관리 (Firestore users/anonymous/links 실시간 동기화) ──
   const [localLinks, setLocalLinks] = useState<PublicLinkData[]>(initialProfile.links);
   const [addLinkOpen, setAddLinkOpen] = useState<boolean>(false);
+  const [deleteTargetLink, setDeleteTargetLink] = useState<PublicLinkData | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState<boolean>(false);
 
   useEffect(() => {
     // Firestore users/anonymous/links 실시간 구독
@@ -172,6 +175,21 @@ export function PublicProfileView({
       if (prev.some((l) => l.id === newLink.id)) return prev;
       return [newLink, ...prev];
     });
+  };
+
+  const handleUpdateLink = (updatedLink: PublicLinkData) => {
+    setLocalLinks((prev) =>
+      prev.map((l) => (l.id === updatedLink.id ? { ...l, ...updatedLink } : l))
+    );
+  };
+
+  const handleDeleteLink = (deletedLinkId: string) => {
+    setLocalLinks((prev) => prev.filter((l) => l.id !== deletedLinkId));
+  };
+
+  const handleOpenDelete = (link: PublicLinkData) => {
+    setDeleteTargetLink(link);
+    setDeleteDialogOpen(true);
   };
 
   // Filter & Sort links based on category, search query & createdAt
@@ -503,7 +521,13 @@ export function PublicProfileView({
         <section className="w-full flex flex-col gap-3">
           {filteredLinks.length > 0 ? (
             filteredLinks.map((link, index) => (
-              <PublicLinkCard key={link.id} link={link} index={index} />
+              <PublicLinkCard
+                key={link.id}
+                link={link}
+                index={index}
+                onUpdate={handleUpdateLink}
+                onDeleteClick={handleOpenDelete}
+              />
             ))
           ) : (
             <div className="w-full py-12 px-4 rounded-2xl text-center bg-[#f5f5f5] border border-dashed border-[#cacacb] flex flex-col items-center justify-center gap-2">
@@ -558,6 +582,16 @@ export function PublicProfileView({
         onOpenChange={setAddLinkOpen}
         onAddLink={handleAddLink}
         currentLinkCount={localLinks.length}
+      />
+
+      {/* =========================================================================
+          6. 링크 삭제 확인 모달
+      ========================================================================= */}
+      <DeleteLinkDialog
+        open={deleteDialogOpen}
+        onOpenChange={setDeleteDialogOpen}
+        link={deleteTargetLink}
+        onDeleted={handleDeleteLink}
       />
     </div>
   );

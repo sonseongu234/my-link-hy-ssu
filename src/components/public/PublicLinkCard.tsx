@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import {
   ExternalLink,
   Code2,
@@ -13,9 +13,12 @@ import {
   Linkedin,
   Layers,
   ArrowUpRight,
+  Pencil,
+  Trash2,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { InlineEditLinkForm } from "./InlineEditLinkForm";
 
 export interface PublicLinkData {
   id: string;
@@ -32,6 +35,8 @@ export interface PublicLinkData {
 interface PublicLinkCardProps {
   link: PublicLinkData;
   index: number;
+  onUpdate?: (updated: PublicLinkData) => void;
+  onDeleteClick?: (link: PublicLinkData) => void;
 }
 
 const ICON_COMPONENTS: Record<string, React.ReactNode> = {
@@ -49,11 +54,12 @@ const ICON_COMPONENTS: Record<string, React.ReactNode> = {
 
 function formatCreatedAt(val?: number | string | Date): string | null {
   if (!val) return null;
-  const time = typeof val === "number"
-    ? val
-    : typeof val === "string"
-    ? new Date(val).getTime()
-    : val.getTime();
+  const time =
+    typeof val === "number"
+      ? val
+      : typeof val === "string"
+      ? new Date(val).getTime()
+      : val.getTime();
   if (!time || isNaN(time)) return null;
 
   const now = Date.now();
@@ -65,7 +71,30 @@ function formatCreatedAt(val?: number | string | Date): string | null {
   return `${d.getFullYear()}.${String(d.getMonth() + 1).padStart(2, "0")}.${String(d.getDate()).padStart(2, "0")}`;
 }
 
-export function PublicLinkCard({ link, index }: PublicLinkCardProps) {
+export function PublicLinkCard({
+  link,
+  index,
+  onUpdate,
+  onDeleteClick,
+}: PublicLinkCardProps) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  // 인라인 수정 모드일 때 인라인 편집 폼 렌더링
+  if (isEditing) {
+    return (
+      <div style={{ animationDelay: `${index * 40}ms` }} className="w-full">
+        <InlineEditLinkForm
+          link={link}
+          onCancel={() => setIsEditing(false)}
+          onSave={(updated) => {
+            setIsEditing(false);
+            onUpdate?.(updated);
+          }}
+        />
+      </div>
+    );
+  }
+
   const formattedDate = formatCreatedAt(link.createdAt);
   const icon = link.icon ? (
     ICON_COMPONENTS[link.icon] || <Globe className="w-5 h-5 text-[#111111]" />
@@ -91,18 +120,28 @@ export function PublicLinkCard({ link, index }: PublicLinkCardProps) {
     return "secondary";
   };
 
+  const handleCardClick = () => {
+    if (typeof window !== "undefined") {
+      if (isEmail) {
+        window.location.href = link.url;
+      } else {
+        window.open(link.url, "_blank", "noopener,noreferrer");
+      }
+    }
+  };
+
   return (
-    <a
-      href={link.url}
-      target={isEmail ? undefined : "_blank"}
-      rel={isEmail ? undefined : "noopener noreferrer"}
-      className="block group select-none active:scale-[0.99] transition-transform duration-150"
+    <div
+      className="block group select-none transition-all duration-150 w-full"
       style={{ animationDelay: `${index * 40}ms` }}
     >
-      <Card className="relative w-full p-4 sm:p-5 flex items-center justify-between gap-4 bg-white hover:bg-[#fafafa] border border-[#e5e5e5] hover:border-[#111111] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all">
+      <Card
+        onClick={handleCardClick}
+        className="relative w-full p-4 sm:p-5 flex items-center justify-between gap-3 sm:gap-4 bg-white hover:bg-[#fafafa] border border-[#e5e5e5] hover:border-[#111111] rounded-2xl shadow-[0_1px_3px_rgba(0,0,0,0.04)] group-hover:shadow-[0_4px_12px_rgba(0,0,0,0.06)] transition-all cursor-pointer"
+      >
         {/* LEFT: Leading Stage Circle + Text */}
         <div className="flex items-center gap-3.5 sm:gap-4 min-w-0 flex-1">
-          {/* 44px circular graphic container on soft-cloud (#f5f5f5) */}
+          {/* 44px circular graphic container */}
           <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#f5f5f5] border border-[#cacacb] flex items-center justify-center flex-shrink-0 group-hover:scale-105 group-hover:border-[#111111] transition-all">
             {icon}
           </div>
@@ -138,13 +177,56 @@ export function PublicLinkCard({ link, index }: PublicLinkCardProps) {
           </div>
         </div>
 
-        {/* RIGHT: Action Circular Button Indicator */}
-        <div className="flex items-center flex-shrink-0 pl-1">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#f5f5f5] text-[#111111] border border-[#e5e5e5] group-hover:bg-[#111111] group-hover:text-white group-hover:border-[#111111] flex items-center justify-center transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5">
-            <ArrowUpRight className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2.2]" />
-          </div>
+        {/* RIGHT: 수정/삭제 버튼 (항상 표시) + 바로가기 버튼 */}
+        <div
+          className="flex items-center gap-1.5 sm:gap-2 flex-shrink-0 pl-1"
+          onClick={(e) => e.stopPropagation()}
+        >
+          {/* ── 수정 버튼 (항상 표시됨) ── */}
+          <button
+            type="button"
+            title="링크 수정"
+            aria-label="링크 수정"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              setIsEditing(true);
+            }}
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#f5f5f5] text-[#39393b] hover:bg-[#111111] hover:text-white border border-[#cacacb] hover:border-[#111111] flex items-center justify-center transition-colors active:scale-95"
+          >
+            <Pencil className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
+          </button>
+
+          {/* ── 삭제 버튼 (항상 표시됨) ── */}
+          <button
+            type="button"
+            title="링크 삭제"
+            aria-label="링크 삭제"
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              onDeleteClick?.(link);
+            }}
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-red-50 text-[#d30005] hover:bg-[#d30005] hover:text-white border border-red-200 hover:border-[#d30005] flex items-center justify-center transition-colors active:scale-95"
+          >
+            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
+          </button>
+
+          {/* ── 바로가기 버튼 ── */}
+          <button
+            type="button"
+            title="링크 방문"
+            aria-label="링크 방문"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleCardClick();
+            }}
+            className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-[#f5f5f5] text-[#111111] border border-[#e5e5e5] group-hover:bg-[#111111] group-hover:text-white group-hover:border-[#111111] flex items-center justify-center transition-all duration-200"
+          >
+            <ArrowUpRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2]" />
+          </button>
         </div>
       </Card>
-    </a>
+    </div>
   );
 }

@@ -8,6 +8,7 @@ import {
   onSnapshot,
   query,
   orderBy,
+  setDoc,
 } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { PublicLinkData } from "@/components/public/PublicLinkCard";
@@ -178,4 +179,47 @@ export function subscribeToLinks(
 export async function deleteLinkFromFirestore(linkId: string): Promise<void> {
   const docRef = doc(db, ...FIRESTORE_LINKS_PATH, linkId);
   await deleteDoc(docRef);
+}
+
+/**
+ * Firestore(users/anonymous/links)에서 링크 수정
+ * 추가할 때 사용했던 동일 경로(users/anonymous/links)를 사용합니다.
+ */
+export async function updateLinkInFirestore(
+  linkId: string,
+  updatedData: Partial<PublicLinkData>
+): Promise<PublicLinkData> {
+  const docRef = doc(db, ...FIRESTORE_LINKS_PATH, linkId);
+
+  const data: Record<string, unknown> = {
+    updatedAt: serverTimestamp(),
+  };
+
+  if (updatedData.title !== undefined) data.title = updatedData.title.trim();
+  if (updatedData.url !== undefined) data.url = updatedData.url.trim();
+  if (updatedData.icon !== undefined) data.icon = updatedData.icon || "globe";
+  if (updatedData.category !== undefined) data.category = updatedData.category || "repo";
+  if (updatedData.isActive !== undefined) data.isActive = updatedData.isActive;
+
+  if (updatedData.description !== undefined) {
+    data.description = updatedData.description.trim();
+  }
+
+  if (updatedData.badge !== undefined) {
+    data.badge = updatedData.badge.trim().toUpperCase();
+  }
+
+  await setDoc(docRef, data, { merge: true });
+
+  return {
+    id: linkId,
+    title: (data.title as string) || (updatedData.title ?? ""),
+    url: (data.url as string) || (updatedData.url ?? ""),
+    description: (data.description as string) || undefined,
+    icon: (data.icon as string) || (updatedData.icon ?? "globe"),
+    badge: (data.badge as string) || undefined,
+    category: (data.category as string) || (updatedData.category ?? "repo"),
+    isActive: (data.isActive as boolean) ?? true,
+    createdAt: updatedData.createdAt || Date.now(),
+  };
 }
